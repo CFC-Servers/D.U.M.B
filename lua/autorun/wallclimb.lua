@@ -62,8 +62,9 @@ end
 ply:GetViewModel():SetNoDraw(false)
 end
 end
+
 --Walljump Left--
-	if (ply:KeyDown(IN_MOVELEFT) and ply:KeyDown(IN_JUMP)) and ply.LastJump and CurTime() >= ply.LastJump then
+	if (ply:KeyDown(IN_MOVELEFT) and ply:KeyDown(IN_JUMP)) and ply.LastJump and CurTime() >= ply.LastJump and not( ply:IsProne() ) then
 	tracedata={}
 	tracedata.start = ply:EyePos() + (ply:GetRight() * 1)
 	tracedata.endpos = ply:EyePos() + (ply:GetRight() * 32)
@@ -87,7 +88,7 @@ end
 					end
 	--Waljump Left end--
 	--Walljump Right--
-	if (ply:KeyDown(IN_MOVERIGHT) and ply:KeyDown(IN_JUMP)) and ply.LastJump and CurTime() >= ply.LastJump then
+	if (ply:KeyDown(IN_MOVERIGHT) and ply:KeyDown(IN_JUMP)) and ply.LastJump and CurTime() >= ply.LastJump and not( ply:IsProne() ) then
 	tracedata={}
 	tracedata.start = ply:EyePos() + (ply:GetRight() * -1)
 	tracedata.endpos = ply:EyePos() + (ply:GetRight() * -32)
@@ -145,7 +146,8 @@ if ply:KeyDown(IN_SPEED) and ply:KeyDown(IN_FORWARD) and ply:OnGround() then
 	-- auto jump close end--
 	
 	--high--
-	if ply:KeyDown(IN_SPEED) and ply:KeyDown(IN_FORWARD) and ply:OnGround() then
+	if ply:KeyDown(IN_SPEED) and ply:KeyDown(IN_FORWARD) and ply:OnGround() and not( ply:IsProne() ) then
+	
 	if not( ply:Crouching() ) then
 	tracedata={}
 	tracedata.start = ply:EyePos()+(ply:GetForward()*1)+(ply:GetUp() * -10 )
@@ -173,7 +175,16 @@ if ply:KeyDown(IN_SPEED) and ply:KeyDown(IN_FORWARD) and ply:OnGround() then
 	if ply:KeyDown(IN_DUCK) then
 	return
 	end
-	if (traceHighLow.Hit) and (traceAimObj.Hit) and not (traceHighHigh.Hit) and not (traceHighHigh2.Hit) and not( ply:Crouching() ) and ply:OnGround() then
+	
+	local nearPlayer = 0
+	local entes = ents.FindInSphere(ply:GetPos(), 60)
+	for k, v in pairs(entes) do
+		if (v:IsPlayer() or v:IsNPC()) and v != ply then
+			nearPlayer = 1
+		end
+	end
+	
+	if (traceHighLow.Hit) and (traceAimObj.Hit) and not (traceHighHigh.Hit) and not (traceHighHigh2.Hit) and not( ply:Crouching() ) and ply:OnGround() and nearPlayer != 1 then
 	if not ply:OnGround() then
 	return
 	end
@@ -182,7 +193,7 @@ if ply:KeyDown(IN_SPEED) and ply:KeyDown(IN_FORWARD) and ply:OnGround() then
 	end
 	end
 	--high end--
-if not( ply:Crouching() ) then
+if not( ply:Crouching() ) and not( ply:IsProne() )  then
 if ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
 
 	--hip--
@@ -208,7 +219,16 @@ if ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
 	if ply:KeyDown(IN_DUCK) then
 	return
 	end
-	if (traceHipLow.Hit) and not (traceHipHigh.Hit) and not (traceHipHigh2.Hit) and not( ply:Crouching() ) then
+	
+	local nearPlayer = 0
+	local entes = ents.FindInSphere(ply:GetPos(), 60)
+	for k, v in pairs(entes) do
+		if (v:IsPlayer() or v:IsNPC()) and v != ply then
+			nearPlayer = 1
+		end
+	end
+	
+	if (traceHipLow.Hit) and not (traceHipHigh.Hit) and not (traceHipHigh2.Hit) and not( ply:Crouching() ) and nearPlayer != 1 then
 	ply:ViewPunch(Angle(2, 1, -1));
 	WallMountSound(ply)
 	ply:SetLocalVelocity(Vector(0,0,300) + (ply:EyeAngles():Up()*0 +  ply:GetForward()*200))
@@ -243,7 +263,15 @@ if ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
 	tracedata.filter = ply
 	local traceNorHigh = util.TraceLine(tracedata)
 	
-	if (traceNorLow.Hit) and (traceAimObj.Hit) and not (traceNorHigh.Hit) and not (traceNorHigh2.Hit)and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
+	local nearPlayer = 0
+	local entes = ents.FindInSphere(ply:GetPos(), 60)
+	for k, v in pairs(entes) do
+		if (v:IsPlayer() or v:IsNPC()) and v != ply then
+			nearPlayer = 1
+		end
+	end
+	
+	if (traceNorLow.Hit) and (traceAimObj.Hit) and not (traceNorHigh.Hit) and not (traceNorHigh2.Hit)and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) and nearPlayer != 1 then
 	ply:GetViewModel():SetNoDraw(true)
 	ply.Lastclimbb = CurTime() + 1.5
 	ply:SetLocalVelocity(Vector(0,0,400) + (ply:EyeAngles():Up()*0 +  ply:GetForward()*100))
@@ -252,7 +280,7 @@ if ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
 	--normal end--
 
 	--WallRunRight--
-	if ply:KeyDown(IN_MOVERIGHT) and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
+	if ply:KeyDown(IN_MOVERIGHT) and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) and not( ply:IsProne() ) then
 	tracedata={}
 	tracedata.start = ply:EyePos() + (ply:GetUp() * -1) + (ply:GetForward() * 32)
 	tracedata.endpos = ply:EyePos()+ (ply:GetUp() * -73) + (ply:GetForward() * 64)
@@ -280,7 +308,7 @@ if ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
 	end
 	--WallRunRight end--
 		--WallRunLeft--
-	if ply:KeyDown(IN_MOVELEFT) and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) then
+	if ply:KeyDown(IN_MOVELEFT) and ply:KeyDown(IN_SPEED)and ply:KeyDown(IN_FORWARD) and not( ply:IsProne() ) then
 	tracedata={}
 	tracedata.start = ply:EyePos() + (ply:GetUp() * -1) + (ply:GetForward() * 32)
 	tracedata.endpos = ply:EyePos()+ (ply:GetUp() * -73) + (ply:GetForward() * 64)
